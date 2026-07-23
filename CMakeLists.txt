@@ -8,6 +8,7 @@ option(USE_CUDA "Enable CUDA support" OFF)
 option(USE_MUSA "Enable MUSA support" OFF)
 option(USE_DCU "Enable DCU support" OFF)
 option(USE_MACA "Enable MACA support" OFF)
+option(USE_SPACEMIT "Enable SpacemiT support" OFF)
 add_compile_definitions(YLT_ENABLE_IBV)
 add_definitions(-DYLT_ENABLE_IBV)
 set(YLT_ENABLE_IBV ON)
@@ -31,6 +32,17 @@ if(USE_MACA)
       $ENV{MACA_PATH}/lib
       $ENV{PYTORCH_INSTALL_PATH}/../tvm_ffi/lib
     )
+endif()
+
+if(USE_SPACEMIT)
+    add_definitions(-DUSE_SPACEMIT)
+    message(STATUS "SpacemiT support enabled")
+
+    # Add SpacemiT platform directory
+    include_directories(${CMAKE_SOURCE_DIR}/xllm/core/platform/spacemit)
+
+    # Add third_party ggml-spacemit includes
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit)
 endif()
 
 if(USE_NPU)

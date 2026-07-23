@@ -24,6 +24,11 @@ add_subdirectory(spdlog)
 if(USE_NPU)
   add_subdirectory(torch_npu_ops)
 endif()
+
+if(USE_SPACEMIT)
+  add_subdirectory(ggml-spacemit)
+endif()
+
 add_subdirectory(Mooncake)
 
 target_include_directories(mooncake_store PUBLIC

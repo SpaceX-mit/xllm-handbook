@@ -15,6 +15,10 @@ if(USE_NPU)
   add_subdirectory(npu)
 endif()
 
+if(USE_SPACEMIT)
+  add_subdirectory(spacemit)
+endif()
+
 cc_library(
   NAME
     platform
@@ -73,4 +77,5 @@ cc_library(
     $<$<BOOL:${USE_MUSA}>:musart>
     $<$<BOOL:${USE_NPU}>:platform_npu>
     $<$<BOOL:${USE_DCU}>:hip::host>
+    $<$<BOOL:${USE_SPACEMIT}>:spacemit_bridge>
 )

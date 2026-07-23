@@ -30,6 +30,10 @@ if(USE_DCU)
   add_subdirectory(dcu)
 endif()
 
+if(USE_SPACEMIT)
+  add_subdirectory(spacemit)
+endif()
+
 cc_library(
   NAME
     kernels
@@ -49,4 +53,5 @@ cc_library(
     $<$<BOOL:${USE_CUDA}>:cuda_kernels>
     $<$<BOOL:${USE_ILU}>:ilu_kernels>
     $<$<BOOL:${USE_DCU}>:dcu_kernels>
+    $<$<BOOL:${USE_SPACEMIT}>:spacemit_kernels>
 )
