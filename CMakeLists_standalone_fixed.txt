@@ -1,0 +1,112 @@
+cmake_minimum_required(VERSION 3.18)
+project(xllm_spacemit_test CXX C)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+
+# Options
+option(USE_SPACEMIT "Enable SpacemiT support" ON)
+option(SPACEMIT_USE_IME2 "Use IME2 for A100 clusters" ON)
+option(SPACEMIT_USE_IME1 "Use IME1 for X100 clusters" OFF)
+option(SPACEMIT_USE_RVV "Use RVV fallback" ON)
+
+# Include directories
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/xllm/core/platform/spacemit
+    ${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit
+)
+
+# Compiler flags for RISC-V
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=rv64gcv -mabi=lp64d")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=rv64gcv -mabi=lp64d")
+
+# ggml-spacemit library - only with files that exist
+add_library(ggml-spacemit STATIC
+    third_party/ggml-spacemit/ggml.c
+    third_party/ggml-spacemit/ggml-alloc.c
+    third_party/ggml-spacemit/ggml-backend.cpp
+    third_party/ggml-spacemit/ime_env.cpp
+    third_party/ggml-spacemit/spine_mem_pool.cpp
+    third_party/ggml-spacemit/repack.cpp
+    third_party/ggml-spacemit/ime.cpp
+)
+
+# Add IME kernels based on options
+if(SPACEMIT_USE_IME2)
+    target_sources(ggml-spacemit PRIVATE
+        third_party/ggml-spacemit/ime2_kernels.cpp
+    )
+    target_compile_definitions(ggml-spacemit PUBLIC GGML_USE_SPACEMIT_IME2)
+    message(STATUS "Enabled IME2 kernels for A100 clusters")
+endif()
+
+if(SPACEMIT_USE_IME1)
+    target_sources(ggml-spacemit PRIVATE
+        third_party/ggml-spacemit/ime1_kernels.cpp
+    )
+    target_compile_definitions(ggml-spacemit PUBLIC GGML_USE_SPACEMIT_IME1)
+    message(STATUS "Enabled IME1 kernels for X100 clusters")
+endif()
+
+if(SPACEMIT_USE_RVV)
+    target_sources(ggml-spacemit PRIVATE
+        third_party/ggml-spacemit/rvv_kernels.cpp
+    )
+    target_compile_definitions(ggml-spacemit PUBLIC GGML_USE_RVV)
+    message(STATUS "Enabled RVV fallback kernels")
+endif()
+
+target_compile_definitions(ggml-spacemit PUBLIC
+    GGML_USE_SPACEMIT
+    GGML_SPACEMIT_RISCV64
+)
+
+# Link math library
+target_link_libraries(ggml-spacemit m pthread)
+
+# SpacemiT bridge library
+add_library(spacemit_bridge STATIC
+    xllm/core/platform/spacemit/ggml_bridge.cpp
+    xllm/core/platform/spacemit/ggml_backend.cpp
+)
+
+target_link_libraries(spacemit_bridge ggml-spacemit)
+
+# SpacemiT kernels library
+add_library(spacemit_kernels STATIC
+    xllm/core/kernels/spacemit/matmul_ggml.cpp
+    xllm/core/kernels/spacemit/rms_norm_ggml.cpp
+)
+
+target_link_libraries(spacemit_kernels spacemit_bridge)
+
+# Test executables
+add_executable(test_ggml_bridge
+    test/platform/spacemit/test_ggml_bridge.cpp
+)
+target_link_libraries(test_ggml_bridge spacemit_bridge pthread)
+
+add_executable(test_spacemit_ops
+    test/kernels/spacemit/test_spacemit_ops.cpp
+)
+target_link_libraries(test_spacemit_ops spacemit_kernels pthread)
+
+# Enable testing
+enable_testing()
+add_test(NAME ggml_bridge_test COMMAND test_ggml_bridge)
+add_test(NAME spacemit_ops_test COMMAND test_spacemit_ops)
+
+# Print configuration
+message(STATUS "")
+message(STATUS "SpacemiT Configuration Summary:")
+message(STATUS "==============================")
+message(STATUS "  Platform: RISC-V 64-bit")
+message(STATUS "  USE_SPACEMIT: ${USE_SPACEMIT}")
+message(STATUS "  SPACEMIT_USE_IME2: ${SPACEMIT_USE_IME2}")
+message(STATUS "  SPACEMIT_USE_IME1: ${SPACEMIT_USE_IME1}")
+message(STATUS "  SPACEMIT_USE_RVV: ${SPACEMIT_USE_RVV}")
+message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "==============================")
+message(STATUS "")
