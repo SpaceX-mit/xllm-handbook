@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout 30
+spawn ssh -o StrictHostKeyChecking=no bianbu@10.0.90.243 "whoami && hostname && uname -m"
+expect {
+    "password:" {
+        send "bianbu\r"
+        expect eof
+    }
+    "Password:" {
+        send "bianbu\r"
+        expect eof
+    }
+    eof
+}
