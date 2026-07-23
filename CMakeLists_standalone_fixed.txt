@@ -11,22 +11,23 @@ option(SPACEMIT_USE_IME2 "Use IME2 for A100 clusters" ON)
 option(SPACEMIT_USE_IME1 "Use IME1 for X100 clusters" OFF)
 option(SPACEMIT_USE_RVV "Use RVV fallback" ON)
 
-# Include directories
-include_directories(
+# Include directories - BEFORE system includes to avoid conflicts
+include_directories(BEFORE
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/xllm/core/platform/spacemit
     ${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit
 )
 
 # Compiler flags for RISC-V
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=rv64gcv -mabi=lp64d")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=rv64gcv -mabi=lp64d")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=rv64gcv -mabi=lp64d -I${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=rv64gcv -mabi=lp64d -I${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit")
 
 # ggml-spacemit library - only with files that exist
 add_library(ggml-spacemit STATIC
     third_party/ggml-spacemit/ggml.c
     third_party/ggml-spacemit/ggml-alloc.c
     third_party/ggml-spacemit/ggml-backend.cpp
+    third_party/ggml-spacemit/ggml-quants.c
     third_party/ggml-spacemit/ime_env.cpp
     third_party/ggml-spacemit/spine_mem_pool.cpp
     third_party/ggml-spacemit/repack.cpp
@@ -61,6 +62,11 @@ endif()
 target_compile_definitions(ggml-spacemit PUBLIC
     GGML_USE_SPACEMIT
     GGML_SPACEMIT_RISCV64
+)
+
+# Force use of local headers BEFORE system headers
+set_target_properties(ggml-spacemit PROPERTIES
+    INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/third_party/ggml-spacemit"
 )
 
 # Link math library
