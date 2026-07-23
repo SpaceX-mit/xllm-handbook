@@ -89,6 +89,9 @@ message(STATUS "ggml-spacemit directory: ${GGML_SPACEMIT_DIR}")
 
 # Collect source files
 set(GGML_SPACEMIT_SOURCES
+  ${GGML_SPACEMIT_DIR}/ggml.c
+  ${GGML_SPACEMIT_DIR}/ggml-alloc.c
+  ${GGML_SPACEMIT_DIR}/ggml-backend.cpp
   ${GGML_SPACEMIT_DIR}/ime_env.cpp
   ${GGML_SPACEMIT_DIR}/spine_mem_pool.cpp
   ${GGML_SPACEMIT_DIR}/repack.cpp
