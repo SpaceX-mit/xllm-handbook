@@ -5,20 +5,27 @@
 ```
 handbook/
 ├── README.md                    # 本文档
-└── docs/                       # 完整文档体系
-    ├── 00_OVERVIEW.md         # 文档总览与导航
-    ├── 01_GLOSSARY.md         # 核心概念术语表
-    ├── 02_ARCHITECTURE.md     # 系统架构设计
-    ├── 03_DESIGN_PRINCIPLES.md # 设计原则与哲学
-    ├── 04_DOMAIN_MODEL.md     # DDD领域模型设计
-    ├── 05_SCHEDULER_DESIGN.md # Scheduler调度器详解
-    ├── 06_WORKER_DESIGN.md    # Worker推理引擎详解
-    ├── 07_KV_CACHE_DESIGN.md # KV Cache缓存管理详解
-    ├── 08_AI_NATIVE_DEVELOPMENT.md # AI Native开发规范
-    ├── 09_API_DESIGN.md      # API设计规范
-    ├── 10_CONFIG_SCHEMA.md    # 配置Schema定义
-    ├── 11_TEST_STRATEGY.md    # 测试策略与规范
-    └── 12_DEPLOYMENT.md      # 部署指南
+├── docs/                       # 完整文档体系 (13份核心文档)
+│   ├── 00_OVERVIEW.md         # 文档总览与导航
+│   ├── 01_GLOSSARY.md         # 核心概念术语表
+│   ├── 02_ARCHITECTURE.md     # 系统架构设计
+│   ├── 03_DESIGN_PRINCIPLES.md # 设计原则与哲学
+│   ├── 04_DOMAIN_MODEL.md     # DDD领域模型设计
+│   ├── 05_SCHEDULER_DESIGN.md # Scheduler调度器详解
+│   ├── 06_WORKER_DESIGN.md    # Worker推理引擎详解
+│   ├── 07_KV_CACHE_DESIGN.md # KV Cache缓存管理详解
+│   ├── 08_AI_NATIVE_DEVELOPMENT.md # AI Native开发规范
+│   ├── 09_API_DESIGN.md      # API设计规范
+│   ├── 10_CONFIG_SCHEMA.md    # 配置Schema定义
+│   ├── 11_TEST_STRATEGY.md    # 测试策略与规范
+│   └── 12_DEPLOYMENT.md      # 部署指南
+├── ARCHITECTURE.md             # 架构分析
+├── CODE_ANALYSIS.md           # 代码分析
+├── INTERFACE.md               # 接口文档
+├── IPD.md                     # IPD开发流程
+├── llm-wiki.md                # LLM知识库
+├── SPEC.md                    # 规格说明
+└── VERIFICATION.md            # 验收标准
 ```
 
 ## 快速导航
