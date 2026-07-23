@@ -15,7 +15,9 @@ limitations under the License.
 
 #include "ops_api.h"
 
-#if defined(USE_MLU)
+#if defined(USE_SPACEMIT)
+#include "spacemit/spacemit_ops.h"
+#elif defined(USE_MLU)
 #include "mlu/mlu_ops_api.h"
 #elif defined(USE_NPU)
 #include "core/kernels/npu/tilelang/tilelang_ops_api.h"
@@ -423,7 +425,9 @@ std::tuple<torch::Tensor, torch::Tensor> rms_norm_dynamic_quant(
 }
 
 torch::Tensor matmul(MatmulParams& params) {
-#if defined(USE_MLU)
+#if defined(USE_SPACEMIT)
+  return spacemit::matmul(params.a, params.b, params.bias);
+#elif defined(USE_MLU)
   return mlu::matmul(
       params.a, params.b, params.bias, params.c, params.alpha, params.beta);
 #elif defined(USE_NPU)

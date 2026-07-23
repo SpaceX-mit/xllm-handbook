@@ -87,6 +87,14 @@ class Platform final {
 #endif
   }
 
+  static constexpr bool is_spacemit() {
+#if defined(USE_SPACEMIT)
+    return true;
+#else
+    return false;
+#endif
+  }
+
   static int32_t device_count();
   // Returns the logical index of the device bound to the current thread.
   // Valid only after the device has been set (e.g. via Device::set_device).
