@@ -1,256 +1,166 @@
-# xLLM Handbook
+# xLLM 开发者手册 - 索引
 
-> xLLM 大模型推理框架知识手册  
-> **文档版本**: v1.0 | **更新日期**: 2026-07-23
+## 文档导航
 
----
+### 📚 按层级导航
 
-## 📚 文档体系
-
-本手册按照 **IPD (集成产品开发)** 流程 + **AI Native** 开发理念组织，包含完整的技术规格、设计文档和验收标准。
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    xLLM Handbook 文档体系                               │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │                    📖 文档索引                                   │   │
-│  ├─────────────────────────────────────────────────────────────────┤   │
-│  │                                                                 │   │
-│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │   │
-│  │  │  SPEC.md        │  │  ARCHITECTURE.md│  │  INTERFACE.md   │  │   │
-│  │  │  📋 规格说明书  │  │  🏗️ 架构设计    │  │  🔌 接口设计    │  │   │
-│  │  │  需求定义       │  │  系统架构       │  │  API 定义       │  │   │
-│  │  │  功能规格       │  │  组件设计       │  │  协议定义       │  │   │
-│  │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │   │
-│  │                                                                 │   │
-│  │  ┌─────────────────┐  ┌─────────────────┐                       │   │
-│  │  │  CODE_ANALYSIS │  │  VERIFICATION.md│  ┌─────────────────┐  │   │
-│  │  │  💻 代码分析    │  │  ✅ 验收标准    │  │  IPD.md         │  │   │
-│  │  │  核心代码解析   │  │  测试用例      │  │  📑 IPD 流程    │  │   │
-│  │  │  算法详解       │  │  SLO 定义      │  │  开发流程指南   │  │   │
-│  │  │  数据流分析     │  │  性能基准      │  │  阶段定义       │  │   │
-│  │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │   │
-│  │                                                                 │   │
-│  └─────────────────────────────────────────────────────────────────┘   │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+| 层级 | 文档 | 说明 |
+|-----|------|------|
+| **概念层** | [总览](./00_OVERVIEW.md) | 文档体系结构 |
+| | [术语表](./01_GLOSSARY.md) | 核心概念定义 |
+| **架构层** | [架构设计](./02_ARCHITECTURE.md) | 系统整体架构 |
+| | [设计原则](./03_DESIGN_PRINCIPLES.md) | 设计哲学与原则 |
+| **模型层** | [领域模型](./04_DOMAIN_MODEL.md) | DDD领域设计 |
+| **组件层** | [Scheduler设计](./05_SCHEDULER_DESIGN.md) | 调度器实现 |
+| | [Worker设计](./06_WORKER_DESIGN.md) | Worker实现 |
+| | [KV Cache设计](./07_KV_CACHE_DESIGN.md) | 缓存管理实现 |
+| **规范层** | [AI Native开发](./08_AI_NATIVE_DEVELOPMENT.md) | AI辅助开发规范 |
+| | [API设计](./09_API_DESIGN.md) | 接口定义 |
+| | [配置Schema](./10_CONFIG_SCHEMA.md) | 配置规范 |
+| | [测试策略](./11_TEST_STRATEGY.md) | 测试规范 |
 
 ---
 
-## 📑 核心文档
+## 🔍 快速查找
 
-### 1. SPEC.md - 技术规格说明书
+### 按主题查找
 
-**阶段**: 概念阶段 (Concept)  
-**用途**: 定义项目需求、功能规格、性能指标、验收标准
+#### 核心概念
+- **Attention机制** → [术语表](./01_GLOSSARY.md#attention)
+- **Batch处理** → [术语表](./01_GLOSSARY.md#batch), [架构](./02_ARCHITECTURE.md#2-batch-处理流程)
+- **KV Cache** → [术语表](./01_GLOSSARY.md#kv-cache), [KV Cache设计](./07_KV_CACHE_DESIGN.md)
+- **Scheduler** → [术语表](./01_GLOSSARY.md#scheduler), [Scheduler设计](./05_SCHEDULER_DESIGN.md)
+- **Worker** → [术语表](./01_GLOSSARY.md#worker), [Worker设计](./06_WORKER_DESIGN.md)
 
-**核心内容**:
-- 系统架构概览
-- 核心模块规格 (Request, Batch, Scheduler, Worker, Executor, KVCache)
-- 接口规格 (Python, C, gRPC)
-- 硬件支持规格
-- 性能规格 (TTFT, TPOT, TTLT)
-- 功能/性能/兼容性验收标准
+#### 并行策略
+- **Tensor Parallel** → [术语表](./01_GLOSSARY.md#tp), [架构](./02_ARCHITECTURE.md#3-并行策略)
+- **Pipeline Parallel** → [术语表](./01_GLOSSARY.md#pp)
+- **Data Parallel** → [术语表](./01_GLOSSARY.md#dp)
+- **Expert Parallel** → [术语表](./01_GLOSSARY.md#ep)
 
-**[→ 查看 SPEC.md](./SPEC.md)**
-
----
-
-### 2. ARCHITECTURE.md - 架构设计文档
-
-**阶段**: 计划阶段 (Plan)  
-**用途**: 详细描述系统架构、组件设计、数据流、扩展点
-
-**核心内容**:
-- 四层架构设计 (Service, Engine, Worker, Platform)
-- 核心组件详细设计 (Request, Batch, Scheduler, Worker, Executor)
-- 分布式架构 (P/D 分离、多级 KV Cache)
-- 数据流设计 (请求处理、模型推理)
-- 扩展点设计 (模型、硬件、调度器)
-
-**[→ 查看 ARCHITECTURE.md](./ARCHITECTURE.md)**
+#### 开发规范
+- **代码规范** → [AI Native开发](./08_AI_NATIVE_DEVELOPMENT.md)
+- **测试规范** → [测试策略](./11_TEST_STRATEGY.md)
+- **API规范** → [API设计](./09_API_DESIGN.md)
+- **配置规范** → [配置Schema](./10_CONFIG_SCHEMA.md)
 
 ---
 
-### 3. INTERFACE.md - 接口设计文档
+## 📊 代码位置索引
 
-**阶段**: 计划阶段 (Plan)  
-**用途**: 定义所有公开 API 的规格和使用方法
+### 核心组件
 
-**核心内容**:
-- Python API (LLM, VLM, SamplingParams)
-- C API (xllm.h)
-- gRPC API (Protocol Buffers)
-- HTTP REST API
-- C++ 内部接口
-- Kernel 接口
-- 接口兼容性策略
+| 组件 | 头文件 | 实现文件 |
+|-----|-------|---------|
+| **Scheduler** | `xllm/core/scheduler/scheduler.h` | `xllm/core/scheduler/*.cpp` |
+| ContinuousScheduler | `continuous_scheduler.h` | `continuous_scheduler.cpp` |
+| DisaggPDScheduler | `disagg_pd_scheduler.h` | `disagg_pd_scheduler.cpp` |
+| **Worker** | `xllm/core/runtime/worker.h` | `xllm/core/runtime/worker.cpp` |
+| WorkerImpl | `worker_impl.h` | `worker_impl.cpp` |
+| LLMWorkerImpl | `llm_worker_impl.h` | `llm_worker_impl.cpp` |
+| **Batch** | `xllm/core/framework/batch/batch.h` | `xllm/core/framework/batch/batch.cpp` |
+| **Request** | `xllm/core/framework/request/request.h` | `xllm/core/framework/request/request.cpp` |
+| **Sequence** | `xllm/core/framework/request/sequence.h` | `xllm/core/framework/request/sequence.cpp` |
+| **KVCache** | `xllm/core/framework/kv_cache/kv_cache.h` | `xllm/core/framework/kv_cache/kv_cache.cpp` |
+| **BlockManager** | `xllm/core/framework/block/block_manager.h` | `xllm/core/framework/block/block_manager.cpp` |
+| **CausalLM** | `xllm/core/framework/model/causal_lm.h` | - |
 
-**[→ 查看 INTERFACE.md](./INTERFACE.md)**
+### API服务
 
----
+| 服务 | 文件 |
+|-----|-----|
+| OpenAI API | `xllm/api_service/openai_service.*` |
+| Anthropic API | `xllm/api_service/anthropic_service.*` |
+| Protocol Buffers | `xllm/proto/*.proto` |
 
-### 4. CODE_ANALYSIS.md - 核心代码深度分析
+### 测试
 
-**阶段**: 开发阶段 (Develop)  
-**用途**: 深入分析核心代码实现，供 AI 复刻和人类学习参考
-
-**核心内容**:
-- 请求到 Token 的完整执行路径
-- 关键代码解析 (WorkerImpl, Scheduler, KVCache, Model)
-- Attention Kernel 实现
-- 数据流详解 (Request → Sequence → Batch)
-- 关键算法分析 (SLO 感知调度、CUDA Graph 优化)
-- 内存管理分析 (KV Cache 布局、Block 分配)
-- 性能优化点总结
-
-**[→ 查看 CODE_ANALYSIS.md](./CODE_ANALYSIS.md)**
-
----
-
-### 5. VERIFICATION.md - 验收标准文档
-
-**阶段**: 验证阶段 (Verify)  
-**用途**: 定义完整的验收标准，供测试和质量保证使用
-
-**核心内容**:
-- 验收策略 (5 层验收体系)
-- 功能验收标准 (F1-F5)
-- 性能验收标准 (P1-P4)
-- SLO 验收 (TTFT, TPOT, 可用性)
-- 兼容性验收 (模型、硬件)
-- AI 复刻验收标准
-- 验收检查清单
-- 验收报告模板
-
-**[→ 查看 VERIFICATION.md](./VERIFICATION.md)**
+| 测试类型 | 目录 |
+|---------|------|
+| 单元测试 | `tests/unit/` |
+| 组件测试 | `tests/component/` |
+| 集成测试 | `tests/integration/` |
+| 性能测试 | `tests/performance/` |
 
 ---
 
-### 6. IPD.md - IPD 开发流程文档
+## 🗂️ 按职责查找
 
-**阶段**: 全流程 (All Phases)  
-**用途**: 定义 IPD 开发流程、阶段门控、交付物规范
+### 调度相关
+1. [Scheduler设计](./05_SCHEDULER_DESIGN.md) - 调度器架构
+2. [调度策略](./05_SCHEDULER_DESIGN.md#4-scheduler-policy) - 调度算法
+3. [ContinuousScheduler](./05_SCHEDULER_DESIGN.md#2-continuous-scheduler-详解) - 连续批处理
+4. [DisaggPDScheduler](./05_SCHEDULER_DESIGN.md#3-disaggpd-scheduler-详解) - P/D分离
 
-**核心内容**:
-- IPD 流程概述 (5 阶段)
-- 概念阶段 (需求定义、可行性评估)
-- 计划阶段 (技术方案、任务分解)
-- 开发阶段 (编码规范、CI/CD)
-- 验证阶段 (测试策略、SLO 测试)
-- 发布阶段 (发布检查清单)
-- IPD 文档体系
-- AI Native 开发增强
+### 推理相关
+1. [Worker设计](./06_WORKER_DESIGN.md) - Worker架构
+2. [LLMWorkerImpl](./06_WORKER_DESIGN.md#2-llmworkerimpl-详解) - LLM推理
+3. [VLMWorkerImpl](./06_WORKER_DESIGN.md#3-vlmworkerimpl-详解) - 多模态推理
+4. [Executor](./06_WORKER_DESIGN.md#5-executor-架构) - 执行器
 
-**[→ 查看 IPD.md](./IPD.md)**
+### 缓存相关
+1. [KV Cache设计](./07_KV_CACHE_DESIGN.md) - 缓存架构
+2. [Block管理](./07_KV_CACHE_DESIGN.md#3-block-管理) - Block分配
+3. [Prefix Cache](./07_KV_CACHE_DESIGN.md#4-prefix-cache) - 前缀缓存
+4. [KV传输](./07_KV_CACHE_DESIGN.md#5-kv-cache-传输-pd-分离) - P/D传输
 
----
-
-## 🗺️ 文档关系图
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         文档依赖关系                                      │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │                        SPEC.md                                   │   │
-│  │                        (需求定义)                                │   │
-│  │                           │                                     │   │
-│  │         ┌─────────────────┼─────────────────┐                   │   │
-│  │         ▼                 ▼                 ▼                   │   │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐               │   │
-│  │  │ARCHITECTURE│  │ INTERFACE  │  │    IPD     │               │   │
-│  │  │ (架构设计) │  │ (接口设计) │  │ (开发流程) │               │   │
-│  │  └─────┬──────┘  └─────┬──────┘  └────────────┘               │   │
-│  │        │               │                                      │   │
-│  │        └───────────────┼──────────────────────────────────────│   │
-│  │                        ▼                                      │   │
-│  │                ┌────────────┐                                  │   │
-│  │                │CODE_ANALYSIS│                                 │   │
-│  │                │ (代码分析)  │                                  │   │
-│  │                └─────┬──────┘                                  │   │
-│  │                      │                                        │   │
-│  │                      ▼                                        │   │
-│  │               ┌────────────┐                                  │   │
-│  │               │ VERIFICATION│                                 │   │
-│  │               │ (验收标准)  │                                  │   │
-│  │               └────────────┘                                  │   │
-│  │                                                                 │   │
-│  └─────────────────────────────────────────────────────────────────┘   │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### 数据相关
+1. [领域模型](./04_DOMAIN_MODEL.md) - 数据聚合
+2. [Batch](./04_DOMAIN_MODEL.md#23-batch-批处理) - 批处理数据
+3. [Request](./04_DOMAIN_MODEL.md#21-requestaggregate-请求聚合) - 请求数据
 
 ---
 
-## 📊 IPD 流程对应
+## 📈 AI辅助开发检查清单
 
-| IPD 阶段 | 核心交付物 | 对应文档 |
-|----------|------------|----------|
-| **概念 (Concept)** | 需求规格说明书 | SPEC.md |
-| **计划 (Plan)** | 技术设计方案 | ARCHITECTURE.md, INTERFACE.md, IPD.md |
-| **开发 (Develop)** | 代码 + 文档 | CODE_ANALYSIS.md |
-| **验证 (Verify)** | 测试报告 | VERIFICATION.md |
-| **发布 (Release)** | 发布说明 | 所有文档完善 |
+### 新功能开发
+- [ ] 阅读相关[领域模型](./04_DOMAIN_MODEL.md)
+- [ ] 遵循[设计原则](./03_DESIGN_PRINCIPLES.md)
+- [ ] 实现符合[AI Native规范](./08_AI_NATIVE_DEVELOPMENT.md)
+- [ ] 编写单元测试，遵循[测试策略](./11_TEST_STRATEGY.md)
+- [ ] 更新相关配置[Schema](./10_CONFIG_SCHEMA.md)
 
----
+### 代码审查
+- [ ] 检查[架构合规](./03_DESIGN_PRINCIPLES.md#2-架构设计原则)
+- [ ] 验证[接口设计](./09_API_DESIGN.md)
+- [ ] 检查[代码自解释性](./08_AI_NATIVE_DEVELOPMENT.md#2-代码自解释规范)
+- [ ] 验证[可测试性](./11_TEST_STRATEGY.md)
 
-## 🎯 使用场景
-
-| 场景 | 推荐文档 |
-|------|----------|
-| 快速了解项目 | README.md (项目根目录) |
-| 理解需求和规格 | SPEC.md |
-| 设计新功能 | ARCHITECTURE.md + INTERFACE.md |
-| 阅读核心代码 | CODE_ANALYSIS.md |
-| 编写测试用例 | VERIFICATION.md |
-| 项目开发管理 | IPD.md |
-| AI 代码复刻 | SPEC.md + CODE_ANALYSIS.md + INTERFACE.md |
-| 性能调优 | ARCHITECTURE.md (优化点) + CODE_ANALYSIS.md |
-| 问题排查 | ARCHITECTURE.md (数据流) + CODE_ANALYSIS.md |
+### 性能优化
+- [ ] 参考[性能设计原则](./03_DESIGN_PRINCIPLES.md#6-性能设计原则)
+- [ ] 使用[Benchmark](./11_TEST_STRATEGY.md#5-性能测试)验证
+- [ ] 检查[内存效率](./03_DESIGN_PRINCIPLES.md#62-内存效率原则)
 
 ---
 
-## 🔗 相关链接
+## 🔗 外部链接
 
-- **项目文档**: https://docs.xllm-ai.com/
-- **GitHub**: https://github.com/jd-opensource/xllm
-- **技术报告**: https://arxiv.org/abs/2510.14686
-
----
-
-## 📝 贡献指南
-
-欢迎贡献 xLLM Handbook！
-
-### 文档规范
-
-1. **格式**: Markdown
-2. **编码**: UTF-8
-3. **命名**: 使用 kebab-case (如 `new-feature.md`)
-4. **语言**: 中文为主，英文术语保留
-
-### 提交流程
-
-```bash
-# 1. 创建分支
-git checkout -b docs/update-handbook
-
-# 2. 编辑文档
-vim handbook/NEW_DOC.md
-
-# 3. 提交
-git add .
-git commit -m "docs: add new documentation"
-
-# 4. 推送并 PR
-git push origin docs/update-handbook
-```
+- [xLLM GitHub](https://github.com/jd-opensource/xllm)
+- [xLLM文档](https://docs.xllm-ai.com/)
+- [OpenAI API参考](https://platform.openai.com/docs/api-reference)
+- [Anthropic API参考](https://docs.anthropic.com/)
 
 ---
 
-*Handbook Version: v1.0 | Last Updated: 2026-07-23*
+## 版本历史
+
+| 版本 | 日期 | 更新内容 |
+|-----|------|---------|
+| 1.0.0 | 2026-07-23 | 初始版本，包含完整文档体系 |
+
+---
+
+## 贡献指南
+
+欢迎贡献文档！请遵循以下步骤：
+
+1. Fork 仓库
+2. 创建分支 `docs/your-feature`
+3. 提交更改
+4. 创建 Pull Request
+
+文档使用 Markdown 编写，遵循 [AI Native 规范](./08_AI_NATIVE_DEVELOPMENT.md)。
+
+---
+
+*最后更新: 2026-07-23*
